@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import torch.nn.functional as F
 import config
-from model.GaMED_AE_KGC import GraphAutoEncoder, GraphCompletion
+from model.KGC_DR import GraphAutoEncoder, GraphCompletion
 from dataset.dataset import PreTrainTransformerDataset
 from torch.utils.data import DataLoader
 import torch.optim as optim
@@ -59,9 +59,9 @@ def te(model_GCM, data, test_data, level_parents, edge_index=None, batch_size=64
                 state_dict = model_GCM.state_dict()
                 best_loss = loss.item()
         with torch.no_grad():
-            _, indices_1 = model_GCM.decoder(out_embedding_1, soft_IND).topk(1000, largest=True, sorted=True)
-            _, indices_2 = model_GCM.decoder(out_embedding_2, soft_ADR).topk(2000, largest=True, sorted=True)
-            _, indices_3 = model_GCM.decoder(out_embedding_3, soft_DDI).topk(4000, largest=True, sorted=True)
+            _, indices_1 = model_GCM.decoder(out_embedding_1, soft_IND).topk(600, largest=True, sorted=True)
+            _, indices_2 = model_GCM.decoder(out_embedding_2, soft_ADR).topk(1200, largest=True, sorted=True)
+            _, indices_3 = model_GCM.decoder(out_embedding_3, soft_DDI).topk(2400, largest=True, sorted=True)
 
             soft_edge_list = {'disease_drug_indication': soft_IND[:, indices_1],
                               'disease_drug_side': soft_ADR[:, indices_2],
@@ -127,9 +127,9 @@ def te(model_GCM, data, test_data, level_parents, edge_index=None, batch_size=64
                     AE_loss_best = tr_loss / nb_tr_steps
                     state_dict_GAE = {k: v for k, v in GAE.state_dict().items() if k.split('.')[0] == 'outputLayer'}
 
-        _, indices_add_edge_DMF = GAE.soft_edge_weight_DMF.topk(200, largest=True, sorted=True)
-        _, indices_add_edge_DMS = GAE.soft_edge_weight_DMS.topk(400, largest=True, sorted=True)
-        _, indices_add_edge_DDI = GAE.soft_edge_weight_MM.topk(800, largest=True, sorted=True)
+        _, indices_add_edge_DMF = GAE.soft_edge_weight_DMF.topk(120, largest=True, sorted=True)
+        _, indices_add_edge_DMS = GAE.soft_edge_weight_DMS.topk(240, largest=True, sorted=True)
+        _, indices_add_edge_DDI = GAE.soft_edge_weight_MM.topk(480, largest=True, sorted=True)
         edge_index_dict['disease_drug_indication'] = torch.cat([edge_index_dict['disease_drug_indication'],
                                                                 soft_edge_list['disease_drug_indication'][:, indices_add_edge_DMF]], dim=-1)
         edge_index_dict['disease_drug_side'] = torch.cat([edge_index_dict['disease_drug_side'],
