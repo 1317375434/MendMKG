@@ -1,4 +1,4 @@
 # MendMKG
 Execution step: 
-1. perform "run_pretrain.py". 
-2. perform "run_model.py"
+1. perform "code/run_pretrain.py". 
+2. perform "code/run_model.py"
