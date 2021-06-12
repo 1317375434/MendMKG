@@ -31,25 +31,6 @@ class mimicDataset(Dataset):
         return torch.cat([value, label], dim=1)
 
 
-class PreTrainDataset(Dataset):
-    def __init__(self, data):
-        super(PreTrainDataset, self).__init__()
-        self.data = data
-
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, idx):
-        value = self.data[idx:idx + 1][['node0', 'node1']]
-
-        label = self.data[idx:idx + 1]['label']
-
-        value = torch.tensor(np.array(value), dtype=torch.long)
-        label = torch.tensor(np.array(label), dtype=torch.long)
-
-        return value, label
-
-
 class PreTrainTransformerDataset(Dataset):
     def __init__(self, data, level_parents):
         super(PreTrainTransformerDataset, self).__init__()
@@ -62,9 +43,12 @@ class PreTrainTransformerDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-        value = self.data[idx:(idx + 1)].drop(['SUBJECT_ID', 'HADM_ID'], axis=1)
-
-        label = self.level_parents[idx:(idx + 1)].drop(['SUBJECT_ID', 'HADM_ID'], axis=1)
+        value = self.data[idx:(idx + 1)]
+        subject_id = value['SUBJECT_ID'].values[0]
+        hadm_id = value['HADM_ID'].values[0]
+        value = value.drop(['SUBJECT_ID', 'HADM_ID'], axis=1)
+        label = self.level_parents[(self.level_parents['SUBJECT_ID'] == subject_id) &
+                                   (self.level_parents['HADM_ID'] == hadm_id)].drop(['SUBJECT_ID', 'HADM_ID'], axis=1)
 
         value = torch.tensor(np.array(value)[:, :(self.diag_len + self.med_len)], dtype=torch.float)
         label = torch.tensor(np.array(label), dtype=torch.float)
