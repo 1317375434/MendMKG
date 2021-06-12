@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-from .MendMKG_model import GAHeM
+from .MendKGC import GAHeM
