@@ -58,7 +58,7 @@ def out_mask(data, data_len, device='cuda'):
     return mask
 
 
-def train(model, data, test_data, level_parents, edge_index=None, batch_size=16, n_epoch=40, diag_len=None,
+def train(model, data, test_data, level_parents, edge_index=None, batch_size=8, n_epoch=10, diag_len=None,
           med_len=None, device='cuda'):
     train_dataset = mimicDataset(data=data, level_parents=level_parents)
     test_dataset = mimicDataset(data=test_data, level_parents=level_parents)
